@@ -1,0 +1,31 @@
+Arduino 6 code
+------------------------
+
+#define outPirPin 8
+#define inPirPin 7
+#include <Wire.h>
+int counter = 0;
+
+void setup()
+{
+  pinMode(outPirPin, INPUT);
+  pinMode(inPirPin, INPUT);
+  Wire.begin();
+}
+void loop()
+{
+  Wire.beginTransmission(5);
+  int outPirVal, inPirVal;
+  outPirVal = digitalRead(outPirPin);
+  inPirVal = digitalRead(inPirPin);
+  if(inPirVal == HIGH) {
+    counter = counter + 1;
+  }
+  if(outPirVal == HIGH) {
+    if(counter>0)
+    	counter = counter - 1;
+  }
+  Wire.write(counter);
+  Wire.endTransmission();
+  delay(1000);
+}

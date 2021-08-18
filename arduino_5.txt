@@ -1,0 +1,27 @@
+Arduino 5 code 
+--------------------
+
+#include <LiquidCrystal.h>
+#include <Wire.h>
+LiquidCrystal lcd(12, 11, 5, 4, 3, 2);
+
+void setup() {
+  Serial.begin(9600);	
+  lcd.begin(16, 2);
+  lcd.setCursor(0,0);
+  lcd.print("PEOPLE IN VAULT : ");
+  Wire.begin(5);                // join i2c bus with address #4
+  Wire.onReceive(receiveEvent);
+}
+
+void loop() {
+  delay(100);
+}
+void receiveEvent(int howMany)
+{
+  int x = Wire.read();    // receive byte as an integer
+  Serial.println(x); 
+  lcd.setCursor(0,1);
+  lcd.print(x);
+}
+ 

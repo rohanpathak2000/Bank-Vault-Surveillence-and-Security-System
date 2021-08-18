@@ -1,0 +1,54 @@
+Arduino 3 code
+--------------------
+
+#include <Servo.h>
+#include <Wire.h>
+#define spin A1
+
+int sensor = A0;
+int sensorThresh = 200;
+
+Servo myservo1;
+Servo myservo2;
+
+void setup() 
+{
+  Wire.begin();
+  pinMode(sensor,INPUT);
+  myservo1.attach(10);
+  myservo2.attach(11);
+  Serial.begin(9600);
+}
+
+void loop() 
+{ 
+  Wire.beginTransmission(4);
+  int analogValue = analogRead(sensor);
+  	if(analogValue>sensorThresh)
+  	{
+      	myservo1.write(100);
+      	myservo2.write(100);
+      	Serial.println('E');
+        Wire.write('E');
+    }
+      else
+      {
+        myservo1.write(0);
+      	myservo2.write(0);
+        Serial.println('S');
+        Wire.write('S');
+
+      }
+  Wire.endTransmission();
+  delay(100);
+}
+
+void readTemp() {
+int reading = analogRead(spin);
+  float voltage = reading * (5000/1024.0);
+  float temperature = (voltage-500)/10;
+  Serial.print(temperature);//temperature in celcius
+  Serial.print(" \xC2\xB0");
+  Serial.println("C");
+  return;
+}

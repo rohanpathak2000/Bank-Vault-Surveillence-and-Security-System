@@ -1,0 +1,224 @@
+Arduino 1 Code
+------------------------------------
+
+// ###### Header files ####### //
+#include <LiquidCrystal.h>
+#include <Servo.h>
+// ########################### //
+
+char recv;
+
+// ####### LCD Config ######## //
+
+const int rs = 12, en = 11, d4 = A1, d5 = A2, d6 = A3, d7 = A4;
+LiquidCrystal lcd(rs, en, d4, d5, d6, d7);
+
+// ########################## //
+
+int l;
+int session1 = 0;
+int session2 = 0;
+int currentPos = 0;
+int attempts = 0;
+int counter = 0;
+int force;
+int flag = 0;
+int firstDoor = 0;
+// ####### Ultrasonic Sensor Config ####### //
+
+int trigPin = 9;
+int echoPin = 8;
+float duration_us, distance_cm;
+
+// ######################################## //
+
+String smokeRecv = "";
+
+// ########### Buzzer Config ############## //
+
+int buzzPin = 7;
+int ledPin = 13;
+int bledPin = 12;
+// ######################################## //
+Servo myservo1;
+Servo myservo2;
+
+
+void setup() {
+  Serial.begin(28800);
+  pinMode(trigPin,OUTPUT);
+  pinMode(echoPin,INPUT);
+  pinMode(ledPin,OUTPUT);
+  pinMode(A0, INPUT);
+  pinMode(bledPin,OUTPUT);
+  lcd.begin(16, 2);  
+  myservo1.attach(10);
+  myservo2.attach(11);
+  lcd.clear();  
+}
+
+void loop() { 
+  while(flag == 0) {
+   if(firstDoor == 0)
+      detectPerson();
+    recv = Serial.read();
+    delay(200);
+    //Serial.println(recv);
+    check();
+    if(recv == 'S')
+      flag = 1;
+    else if(recv == 'P')
+      firstDoor = 1;
+    else if(recv == 'F')
+      tone(buzzPin, 500, 500);  	  
+  }
+}
+
+void smokeAlert() {
+  lcd.setCursor(0,0);
+  lcd.print("SMOKE ALERT");
+  delay(500);
+  return;
+}
+
+void incorrect() {
+  	lcd.clear();
+  	lcd.setCursor(0,0);
+    lcd.print("INCORRECT");
+    detectPerson();
+  	delay(2000);
+  	return;
+}
+
+void displayscreen() {
+  	lcd.clear();
+    lcd.setCursor(0,0);
+    lcd.println("*ENTER THE CODE*");
+  	delay(500);
+  	return;
+ }
+
+void unlockFirstDoor() {
+  lcd.clear();
+  lcd.setCursor(0,0);
+  lcd.print("PROCEED .....");
+  Serial.println("First door unlocked !!!!");
+  delay(2000);
+  return;
+ }
+
+void unlockSecondDoor() {
+  lcd.clear();
+  lcd.setCursor(0,0);
+  lcd.print("ENTERED....");
+  delay(2000);
+  return;
+}
+void lockBothDoors() {
+    lcd.clear();
+    lcd.setCursor(0,0);
+    lcd.print("INTRUDER ALERT");
+    Serial.println("Intruder trapped !!!");
+    tone(buzzPin, 500, 3000);
+    digitalWrite(ledPin,HIGH);
+    delay(2000);
+    digitalWrite(ledPin,LOW);
+    return;
+}
+int sessionInitiator(char key) {
+  if(key == '#')
+    	return 1;
+  else
+    return 0;
+}
+int isValidKey(char key) {
+  if((((key-'0')>=0) && ((key-'0')<=9)) || (key == 'S') || (key == 'F') || (key == 'T')) 
+    return 1;
+  else
+    return 0;
+}
+
+void setScreenForInput() {
+  			lcd.clear();
+  			lcd.print("");
+ 			lcd.clear();
+      		lcd.setCursor(0,0);
+      		lcd.print("PASSWORD:");
+      		lcd.setCursor(9,0);
+      		lcd.print(" ");
+      		lcd.setCursor(9,0);
+  			for(l=0;l<=currentPos;l++) { 
+        		lcd.print("*");
+      		}
+  			return;
+}
+
+void check()
+{
+  force=analogRead(A0);
+  if(force<466)
+  {
+    digitalWrite(ledPin,HIGH);
+    Serial.println(force);
+    tone(buzzPin, 50, 500);
+  }
+  else
+  {
+    digitalWrite(ledPin,LOW);
+  }
+  return;
+}
+
+void intruderInVault() 
+{
+  lcd.clear();
+  lcd.setCursor(0,0);
+  lcd.print("INTRUDER ALERT !!!");
+  lcd.setCursor(0,1);
+  lcd.print("LOCATION:VAULT ");
+  delay(200);
+  return;
+}
+
+void displayAlert(float distance_cm) {
+  lcd.clear();
+    lcd.setCursor(0, 0);
+  	lcd.print("INTRUDER ALERT !!!");
+    lcd.setCursor(0,1);
+    lcd.print("Distance: ");
+    lcd.print(distance_cm);
+    lcd.print("cm");
+  	return;
+  }
+  
+void detectPerson() {
+  digitalWrite(trigPin,HIGH);
+  delayMicroseconds(10);
+  digitalWrite(trigPin, LOW);
+  
+  // measure duration of pulse from ECHO pin
+  duration_us = pulseIn(echoPin, HIGH);
+  // calculate the distance
+  distance_cm = 0.017 * duration_us;
+  Serial.print("Distance: ");
+  Serial.print(distance_cm);
+  Serial.print("\n");
+  digitalWrite(ledPin,LOW);
+  if((distance_cm < 328)&&(firstDoor == 0))
+  {
+    lcd.clear();
+    lcd.setCursor(0, 0);
+    Serial.println("Intruder Alert!!!");
+    tone(buzzPin, 200, 500);
+    digitalWrite(12,HIGH);
+  }
+  else
+  {
+    lcd.clear();
+    lcd.setCursor(0, 0);
+    digitalWrite(12,LOW);
+    Serial.println("Vault Secure");
+  }
+  delay(500);
+  return;
+}

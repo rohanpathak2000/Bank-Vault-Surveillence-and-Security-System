@@ -1,0 +1,191 @@
+Arduino 2 code
+--------------------------
+
+#include <Keypad.h>
+#include <Servo.h>
+#include <Wire.h>
+#include <LiquidCrystal.h>
+
+#define codeLength 5
+Servo myservo;
+Servo byservo;
+char Code[codeLength];
+char Bode[codeLength];
+char PassW[codeLength]="9999";
+char PassM[codeLength]="9358";
+byte keycount=0;
+byte meycount=0;
+byte val=0;
+int passedFirstDoor = 0;
+int end = 0,q=0,l;
+int currentPos = 0;
+const int rs = 12, en =13, d4 = A2, d5 = A3, d6 = A4, d7 = A5;
+LiquidCrystal lcd(rs, en, d4, d5, d6, d7);
+const byte ROWS = 4; 
+const byte COLS = 4; 
+char hexaKeys[ROWS][COLS] = {
+  {'1', '2', '3','A'},
+  {'4', '5', '6','B'},
+  {'7', '8', '9','C'},
+  {'*', '0', '#','D'}
+};
+
+byte rowPins[ROWS] = {9, 8, 7, 6}; 
+byte colPins[COLS] = {5, 4, 3, 2}; 
+
+Keypad customKeypad = Keypad(makeKeymap(hexaKeys), rowPins, colPins, ROWS, COLS); 
+void setup(){
+  Serial.begin(28800);
+  lcd.begin(16, 2);
+  myservo.attach(10);
+  byservo.attach(11);
+}
+  
+void loop(){ 
+  while(passedFirstDoor != 1) {
+  		keypad_enter();
+  }
+  while(end != 1)
+  	meypad_enter();
+  delay(100);
+}
+void deleteCount(){
+  while(keycount !=0){
+    Code[keycount--]=0;
+  }
+  return;
+}
+
+void deletCount(){
+  while(meycount !=0){
+    Bode[meycount--]=0;
+  }
+    return;
+  }
+
+void keypad_enter() {
+  	//detectPerson();
+  	if(currentPos == 0) { 
+      //Initial Display of "Enter the code"
+    }
+      lcd.setCursor(0,0);
+      lcd.print("PASSWORD:");
+	char customKey = customKeypad.getKey();
+  	if(customKey){
+      Code[keycount]=customKey;
+      keycount++;	
+      Serial.println(customKey);
+      
+      //Serial.write(customKey);
+  			for(l=0;l<=currentPos;l++) { 
+        		lcd.print("*");
+      		}
+	++currentPos;
+    	
+      	
+  }
+  if(keycount==codeLength-1){
+    Serial.println(" ");
+    keypad_validation();
+ }
+  return;
+}
+ void keypad_validation() {
+    if(!strcmp(Code,PassW)){
+      passedFirstDoor = 1; 
+      Serial.write('P');
+        lcd.clear();
+  lcd.setCursor(0,0);
+  lcd.print("PROCEED .....");
+  Serial.println("First door unlocked !!!!");
+  delay(500); //func required
+      Serial.println("Correct and moving to next keypad");
+      myservo.write(80);
+    }
+   else {
+     //Serial.write('F');
+      lcd.clear();
+  	lcd.setCursor(0,0);
+    lcd.print("INCORRECT");
+    
+  	delay(1000); //func required
+   }
+   	currentPos = 0;
+   	deleteCount();
+   return;
+   }
+ 
+   
+ void meypad_enter() {
+        char mustomKey = customKeypad.getKey();
+        if(mustomKey){
+        //send key to lcd  
+        //Serial.println(mustomKey);
+        Bode[meycount]=mustomKey;
+        //Serial.write(Bode[meycount]);
+        lcd.clear();
+      	lcd.setCursor(0,0);
+      	lcd.print("PASSWORD:");
+        delay(100);
+  		for(l=0;l<=currentPos;l++) { 
+        		lcd.print("*");
+      	}
+        delay(500);
+        meycount++;
+          ++currentPos;
+        }
+        if(meycount==codeLength-1){
+        	Serial.println(" ");
+         	meypad_validation(); 
+        }
+ 
+      return;
+ }
+void meypad_validation() {
+      if(!strcmp(Bode,PassM)){
+      Serial.println("Correct and vault unlocked");  
+      byservo.write(80);
+      Serial.write('S');
+        lcd.clear();
+  lcd.setCursor(0,0);
+  lcd.print("ENTERED....");
+  //flag = 0;
+  delay(1000);
+      end = 1;
+      //Send "success" flag to other Arduino
+      }
+      else
+      {
+        if (val==3)
+         {
+           Serial.println("Alarm triggered");
+           byservo.write(10);
+           myservo.write(10);
+           Serial.write('F');
+           end = 1;
+           q=1;
+              lcd.clear();
+    lcd.setCursor(0,0);
+    lcd.print("INTRUDER ALERT");
+           //Send "failed" flag to other Arduino
+         }
+        if (q!=1){
+         lcd.clear();
+         lcd.setCursor(0,0);
+         lcd.print("INCORRECT");
+         //Serial.write('T');
+         Serial.println("Incorrect");
+         lcd.setCursor(0,1);
+         lcd.print(3-val);
+         lcd.print("tries left");
+          val++;
+        }
+         
+      }
+  	deletCount(); 
+  	currentPos = 0;
+  return;
+    }
+
+ 
+

@@ -8,7 +8,7 @@ This model assumes that to reach the vault a person must unlock 2 doors. The fir
 ## Working 
 A person which requires access to the vault will have to enter the keycode to the passage door in the keypad lock. If he/she opens enters the correct code and opens the door the ultrasonic sensor will be activated. Then the person will have to enter the correct access code in the keypad of the vault door. There will be only 3 incorrect attempts allowed, if the person exceeds that limit, then both the passage door and the vault door will be locked and an alarm will be raised. An LCD Display displays the number of people inside the vault. The smoke sensor keeps sensing the smoke instensity whenever it goes above a threshold, an alarm for evacuation will be raised and the vents will open up for the smoke to escape. 
 
-Circuit Diagram : (Arduinos have been labeeled corresponding to the code)
+Circuit Diagram : (Arduinos have been labelled corresponding to the code)
 ![Circuit Design](https://user-images.githubusercontent.com/75062006/130012310-c18584f6-9acc-4394-a30a-de22c47b6663.png)
 
 <br/>

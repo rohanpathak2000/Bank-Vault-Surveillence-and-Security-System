@@ -1,6 +1,5 @@
 Arduino 1 Code
 ------------------------------------
-
 // ###### Header files ####### //
 #include <LiquidCrystal.h>
 #include <Servo.h>
@@ -74,85 +73,6 @@ void loop() {
   }
 }
 
-void smokeAlert() {
-  lcd.setCursor(0,0);
-  lcd.print("SMOKE ALERT");
-  delay(500);
-  return;
-}
-
-void incorrect() {
-  	lcd.clear();
-  	lcd.setCursor(0,0);
-    lcd.print("INCORRECT");
-    detectPerson();
-  	delay(2000);
-  	return;
-}
-
-void displayscreen() {
-  	lcd.clear();
-    lcd.setCursor(0,0);
-    lcd.println("*ENTER THE CODE*");
-  	delay(500);
-  	return;
- }
-
-void unlockFirstDoor() {
-  lcd.clear();
-  lcd.setCursor(0,0);
-  lcd.print("PROCEED .....");
-  Serial.println("First door unlocked !!!!");
-  delay(2000);
-  return;
- }
-
-void unlockSecondDoor() {
-  lcd.clear();
-  lcd.setCursor(0,0);
-  lcd.print("ENTERED....");
-  delay(2000);
-  return;
-}
-void lockBothDoors() {
-    lcd.clear();
-    lcd.setCursor(0,0);
-    lcd.print("INTRUDER ALERT");
-    Serial.println("Intruder trapped !!!");
-    tone(buzzPin, 500, 3000);
-    digitalWrite(ledPin,HIGH);
-    delay(2000);
-    digitalWrite(ledPin,LOW);
-    return;
-}
-int sessionInitiator(char key) {
-  if(key == '#')
-    	return 1;
-  else
-    return 0;
-}
-int isValidKey(char key) {
-  if((((key-'0')>=0) && ((key-'0')<=9)) || (key == 'S') || (key == 'F') || (key == 'T')) 
-    return 1;
-  else
-    return 0;
-}
-
-void setScreenForInput() {
-  			lcd.clear();
-  			lcd.print("");
- 			lcd.clear();
-      		lcd.setCursor(0,0);
-      		lcd.print("PASSWORD:");
-      		lcd.setCursor(9,0);
-      		lcd.print(" ");
-      		lcd.setCursor(9,0);
-  			for(l=0;l<=currentPos;l++) { 
-        		lcd.print("*");
-      		}
-  			return;
-}
-
 void check()
 {
   force=analogRead(A0);
@@ -168,28 +88,6 @@ void check()
   }
   return;
 }
-
-void intruderInVault() 
-{
-  lcd.clear();
-  lcd.setCursor(0,0);
-  lcd.print("INTRUDER ALERT !!!");
-  lcd.setCursor(0,1);
-  lcd.print("LOCATION:VAULT ");
-  delay(200);
-  return;
-}
-
-void displayAlert(float distance_cm) {
-  lcd.clear();
-    lcd.setCursor(0, 0);
-  	lcd.print("INTRUDER ALERT !!!");
-    lcd.setCursor(0,1);
-    lcd.print("Distance: ");
-    lcd.print(distance_cm);
-    lcd.print("cm");
-  	return;
-  }
   
 void detectPerson() {
   digitalWrite(trigPin,HIGH);

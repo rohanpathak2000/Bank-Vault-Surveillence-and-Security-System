@@ -22,15 +22,4 @@ Circuit Diagram : (Arduinos have been labelled corresponding to the code)
 ![Circuit Design_3](https://user-images.githubusercontent.com/75062006/130013228-18ffdb7f-6aba-41e7-aa40-1977135cb199.png)
 
 
-
-
-
-
-
-Working simulation :
-
-
-
-
-
 You are welcome to try it out yourself in tinkercad using the link : https://www.tinkercad.com/things/3mYpz2mTJ1w-securitysystem
